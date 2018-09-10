@@ -57,7 +57,7 @@ function objectToArray(sources: { [key: string]: boolean }) {
   const target = [];
 
   if (sources) {
-    return target
+    return target;
   }
 
   for (const key in sources) {
@@ -90,14 +90,20 @@ export const cancelTrip = functions.database
       const updates = {};
 
       if (after.notifiedDrivers) {
-        for (const driverId of objectToArray(after.notifiedDrivers)) {
-          updates[`/tripsByDrivers/${driverId}/${tripId}/state`] =
-            TripState.CANCEL;
+        const drivers = after.notifiedDrivers;
+
+        for (const driverId in drivers) {
+          if (drivers.hasOwnProperty(driverId)) {
+            updates[`/tripsByDrivers/${driverId}/${tripId}/state`] =
+              TripState.CANCEL;
+          }
         }
       }
 
       updates[`/tripsByPassengers/${after.userId}/${tripId}/state`] =
         TripState.CANCEL;
+
+      console.log("Trip cancel updates:", updates);
 
       return admin
         .database()
