@@ -38,6 +38,8 @@ export const updateTrip = functions.database
 
     if (after.state === trips.TripState.CANCEL) {
       updates = trips.cancel(before, after, tripId);
+    } else if (after.state === trips.TripState.ACCEPTED) {
+      updates = trips.take(before, after, tripId);
     }
 
     return admin
