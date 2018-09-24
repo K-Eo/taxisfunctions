@@ -38,9 +38,9 @@ export const updateTrip = functions.database
     }
 
     if (after.state === TripState.CANCEL) {
-      updates = cancel(before, after, tripId);
+      updates = cancel(after, tripId);
     } else if (after.state === TripState.ACCEPTED) {
-      updates = take(before, after, tripId);
+      updates = take(after, tripId);
     }
 
     return admin

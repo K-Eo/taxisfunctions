@@ -1,14 +1,14 @@
 import { Trip, TripState } from "./models";
 
-export const take = (before: Trip, after: Trip, tripId: string) => {
+export const take = (trip: Trip, tripId: string) => {
   console.log("Handle trip take: ", tripId);
 
-  const passengerId = after.passenger.id;
-  const targetDriver = after.driver;
+  const passengerId = trip.passenger.id;
+  const targetDriver = trip.driver;
   const updates = {};
 
   if (targetDriver.id) {
-    const drivers = after.notifiedDrivers || {};
+    const drivers = trip.notifiedDrivers || {};
 
     for (const driverId in drivers) {
       if (drivers.hasOwnProperty(driverId)) {
@@ -26,13 +26,13 @@ export const take = (before: Trip, after: Trip, tripId: string) => {
   return updates;
 };
 
-export const cancel = (before: Trip, after: Trip, tripId: string) => {
+export const cancel = (trip: Trip, tripId: string) => {
   console.log("Handle trip cancel: ", tripId);
 
   const updates = {};
 
-  if (after.notifiedDrivers) {
-    const drivers = after.notifiedDrivers;
+  if (trip.notifiedDrivers) {
+    const drivers = trip.notifiedDrivers;
 
     for (const driverId in drivers) {
       if (drivers.hasOwnProperty(driverId)) {
@@ -42,7 +42,7 @@ export const cancel = (before: Trip, after: Trip, tripId: string) => {
     }
   }
 
-  updates[`/tripsByPassengers/${after.passenger.id}/${tripId}/state`] =
+  updates[`/tripsByPassengers/${trip.passenger.id}/${tripId}/state`] =
     TripState.CANCEL;
 
   console.log("Trip cancel updates:", updates);
