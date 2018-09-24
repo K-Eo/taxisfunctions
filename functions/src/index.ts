@@ -20,7 +20,7 @@ import * as admin from "firebase-admin";
 
 import * as utils from "./utils";
 import { Trip, TripState } from "./models";
-import { arrive, cancel, take } from "./trip";
+import { arrive, boarded, cancel, take } from "./trip";
 
 admin.initializeApp();
 
@@ -43,6 +43,8 @@ export const updateTrip = functions.database
       updates = take(after, tripId);
     } else if (after.state === TripState.ARRIVED) {
       updates = arrive(after, tripId);
+    } else if (after.state === TripState.BOARDED) {
+      updates = boarded(after, tripId);
     }
 
     return admin

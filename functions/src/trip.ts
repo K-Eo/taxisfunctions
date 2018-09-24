@@ -64,3 +64,18 @@ export const arrive = (trip: Trip, tripId: string) => {
 
   return updates;
 };
+
+export const boarded = (trip: Trip, tripId: string) => {
+  console.log("Handle trip boarded: ", tripId);
+
+  const updates = {};
+
+  updates[`tripsByDrivers/${trip.driver.id}/${tripId}/state`] =
+    TripState.BOARDED;
+  updates[`tripsByPassengers/${trip.passenger.id}/${tripId}/state`] =
+    TripState.BOARDED;
+
+  console.log("Trip boarded updates: ", updates);
+
+  return updates;
+};
