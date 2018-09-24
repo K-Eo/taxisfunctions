@@ -3,7 +3,7 @@ import { Trip, TripState } from "./models";
 export const take = (before: Trip, after: Trip, tripId: string) => {
   console.log("Handle trip take: ", tripId);
 
-  const userId = after.userId;
+  const passengerId = after.passenger.id;
   const targetDriver = after.driver;
   const updates = {};
 
@@ -19,8 +19,9 @@ export const take = (before: Trip, after: Trip, tripId: string) => {
     }
   }
 
-  updates[`/tripsByPassengers/${userId}/${tripId}/driver`] = targetDriver;
-  updates[`/tripsByPassengers/${userId}/${tripId}/state`] = TripState.ACCEPTED;
+  updates[`/tripsByPassengers/${passengerId}/${tripId}/driver`] = targetDriver;
+  updates[`/tripsByPassengers/${passengerId}/${tripId}/state`] =
+    TripState.ACCEPTED;
 
   return updates;
 };
@@ -41,7 +42,7 @@ export const cancel = (before: Trip, after: Trip, tripId: string) => {
     }
   }
 
-  updates[`/tripsByPassengers/${after.userId}/${tripId}/state`] =
+  updates[`/tripsByPassengers/${after.passenger.id}/${tripId}/state`] =
     TripState.CANCEL;
 
   console.log("Trip cancel updates:", updates);

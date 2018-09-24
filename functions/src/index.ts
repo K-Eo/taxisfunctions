@@ -52,8 +52,8 @@ export const updateTrip = functions.database
 export const notifyDrivers = functions.database
   .ref("/trips/{tripId}")
   .onCreate(async (snapshot, context) => {
-    const original = snapshot.val();
-    const passengerId = original.userId;
+    const original = snapshot.val() as Trip;
+    const passengerId = original.passenger.id;
     const tripId = context.params.tripId as string;
 
     console.log("Creating new trip", tripId, original);

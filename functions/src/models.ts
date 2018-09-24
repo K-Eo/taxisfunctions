@@ -22,6 +22,7 @@ export enum TripState {
 export interface Trip {
   driver: User;
   notifiedDrivers?: { [key: string]: boolean };
+  passenger: User;
   position: Position;
   state: string;
   userId: string;
