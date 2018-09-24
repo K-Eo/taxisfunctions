@@ -79,3 +79,34 @@ export const boarded = (trip: Trip, tripId: string) => {
 
   return updates;
 };
+
+export const traveling = (trip: Trip, tripId: string) => {
+  console.log("Handle trip traveling: ", tripId);
+
+  const updates = {};
+
+  updates[`tripsByDrivers/${trip.driver.id}/${tripId}/state`] =
+    TripState.TRAVELING;
+  updates[`tripsByPassengers/${trip.passenger.id}/${tripId}/state`] =
+    TripState.TRAVELING;
+
+  console.log("Trip traveling updates: ", updates);
+
+  return updates;
+};
+
+
+export const finalized = (trip: Trip, tripId: string) => {
+  console.log("Handle trip finalized: ", tripId);
+
+  const updates = {};
+
+  updates[`tripsByDrivers/${trip.driver.id}/${tripId}/state`] =
+    TripState.FINALIZED;
+  updates[`tripsByPassengers/${trip.passenger.id}/${tripId}/state`] =
+    TripState.FINALIZED;
+
+  console.log("Trip finalized updates: ", updates);
+
+  return updates;
+};

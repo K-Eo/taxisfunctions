@@ -13,7 +13,7 @@ export enum TripState {
   ARRIVED = "arrived",
   BOARDED = "boarded",
   CANCEL = "cancel",
-  FINALIZE = "finalize",
+  FINALIZED = "finalized",
   PENDING = "pending",
   TAKED = "taked",
   TRAVELING = "traveling"
