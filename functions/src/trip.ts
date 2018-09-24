@@ -49,3 +49,18 @@ export const cancel = (trip: Trip, tripId: string) => {
 
   return updates;
 };
+
+export const arrive = (trip: Trip, tripId: string) => {
+  console.log("Handle trip arrive: ", tripId);
+
+  const updates = {};
+
+  updates[`tripsByDrivers/${trip.driver.id}/${tripId}/state`] =
+    TripState.ARRIVED;
+  updates[`tripsByPassengers/${trip.passenger.id}/${tripId}/state`] =
+    TripState.ARRIVED;
+
+  console.log("Trip arrive updates: ", updates);
+
+  return updates;
+};
