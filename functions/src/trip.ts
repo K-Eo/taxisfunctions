@@ -1,47 +1,26 @@
-interface Position {
-  latitude: number;
-  longitude: number;
-}
-
-export enum TripState {
-  ACCEPTED = "accepted",
-  ARRIVED = "arrived",
-  BOARDED = "boarded",
-  CANCEL = "cancel",
-  FINALIZE = "finalize",
-  PENDING = "pending",
-  TAKED = "taked",
-  TRAVELING = "traveling"
-}
-
-export interface Trip {
-  driverId?: string;
-  notifiedDrivers?: { [key: string]: boolean };
-  position: Position;
-  state: string;
-  userId: string;
-}
+import { Trip, TripState } from "./models";
 
 export const take = (before: Trip, after: Trip, tripId: string) => {
   console.log("Handle trip take: ", tripId);
 
   const userId = after.userId;
-  const targetDriverId = after.driverId;
+  const targetDriver = after.driver;
   const updates = {};
 
-  if (targetDriverId) {
+  if (targetDriver.id) {
     const drivers = after.notifiedDrivers || {};
 
     for (const driverId in drivers) {
       if (drivers.hasOwnProperty(driverId)) {
+        updates[`/tripsByDrivers/${driverId}/${tripId}/driver`] = targetDriver;
         updates[`/tripsByDrivers/${driverId}/${tripId}/state`] =
-          driverId === targetDriverId ? TripState.ACCEPTED : TripState.TAKED;
+          driverId === targetDriver.id ? TripState.ACCEPTED : TripState.TAKED;
       }
     }
   }
 
+  updates[`/tripsByPassengers/${userId}/${tripId}/driver`] = targetDriver;
   updates[`/tripsByPassengers/${userId}/${tripId}/state`] = TripState.ACCEPTED;
-  updates[`/tripsByPassengers/${userId}/${tripId}/driverId`] = targetDriverId;
 
   return updates;
 };

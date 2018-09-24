@@ -19,15 +19,16 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 import * as utils from "./utils";
-import * as trips from "./trip";
+import { Trip, TripState } from "./models";
+import { cancel, take } from "./trip";
 
 admin.initializeApp();
 
 export const updateTrip = functions.database
   .ref("/trips/{tripId}")
   .onUpdate((change, context) => {
-    const before = change.before.val() as trips.Trip;
-    const after = change.after.val() as trips.Trip;
+    const before = change.before.val() as Trip;
+    const after = change.after.val() as Trip;
     const tripId = context.params.tripId as string;
     let updates = null;
 
@@ -36,10 +37,10 @@ export const updateTrip = functions.database
       return null;
     }
 
-    if (after.state === trips.TripState.CANCEL) {
-      updates = trips.cancel(before, after, tripId);
-    } else if (after.state === trips.TripState.ACCEPTED) {
-      updates = trips.take(before, after, tripId);
+    if (after.state === TripState.CANCEL) {
+      updates = cancel(before, after, tripId);
+    } else if (after.state === TripState.ACCEPTED) {
+      updates = take(before, after, tripId);
     }
 
     return admin
