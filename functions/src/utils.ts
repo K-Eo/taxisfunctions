@@ -1,9 +1,9 @@
 export const arrayToObject = (sources: string[]) => {
-  const target: { [key: string]: boolean } = {};
+  const target: { [key: string]: boolean } = {}
 
   for (const current of sources) {
-    target[current] = true;
+    target[current] = true
   }
 
-  return target;
-};
+  return target
+}

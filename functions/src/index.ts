@@ -13,88 +13,88 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-"use strict";
+'use strict'
 
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+import * as functions from 'firebase-functions'
+import * as admin from 'firebase-admin'
 
-import * as utils from "./utils";
-import { Trip, TripState } from "./models";
-import { arrive, boarded, cancel, take, traveling, finalized } from "./trip";
+import * as utils from './utils'
+import { Trip, TripState } from './models'
+import { arrive, boarded, cancel, take, traveling, finalized } from './trip'
 
-admin.initializeApp();
+admin.initializeApp()
 
 export const updateTrip = functions.database
-  .ref("/trips/{tripId}")
+  .ref('/trips/{tripId}')
   .onUpdate((change, context) => {
-    const before = change.before.val() as Trip;
-    const after = change.after.val() as Trip;
-    const tripId = context.params.tripId as string;
-    let updates = null;
+    const before = change.before.val() as Trip
+    const after = change.after.val() as Trip
+    const tripId = context.params.tripId as string
+    let updates = null
 
     if (before.state === after.state) {
-      console.log(`Trip state dind't change`, after.state);
-      return null;
+      console.log(`Trip state dind't change`, after.state)
+      return null
     }
 
     if (after.state === TripState.CANCEL) {
-      updates = cancel(after, tripId);
+      updates = cancel(after, tripId)
     } else if (after.state === TripState.ACCEPTED) {
-      updates = take(after, tripId);
+      updates = take(after, tripId)
     } else if (after.state === TripState.ARRIVED) {
-      updates = arrive(after, tripId);
+      updates = arrive(after, tripId)
     } else if (after.state === TripState.BOARDED) {
-      updates = boarded(after, tripId);
+      updates = boarded(after, tripId)
     } else if (after.state === TripState.TRAVELING) {
-      updates = traveling(after, tripId);
+      updates = traveling(after, tripId)
     } else if (after.state === TripState.FINALIZED) {
-      updates = finalized(after, tripId);
+      updates = finalized(after, tripId)
     }
 
     return admin
       .database()
       .ref()
-      .update(updates);
-  });
+      .update(updates)
+  })
 
 export const notifyDrivers = functions.database
-  .ref("/trips/{tripId}")
+  .ref('/trips/{tripId}')
   .onCreate(async (snapshot, context) => {
-    const original = snapshot.val() as Trip;
-    const passengerId = original.passenger.id;
-    const tripId = context.params.tripId as string;
+    const original = snapshot.val() as Trip
+    const passengerId = original.passenger.id
+    const tripId = context.params.tripId as string
 
-    console.log("Creating new trip", tripId, original);
+    console.log('Creating new trip', tripId, original)
 
     const drivers = await admin
       .database()
-      .ref("drivers")
+      .ref('drivers')
       .limitToFirst(10)
-      .once("value");
+      .once('value')
 
-    const driversIds = [];
+    const driversIds = []
 
     drivers.forEach(snap => {
-      driversIds.push(snap.key);
-      return true;
-    });
+      driversIds.push(snap.key)
+      return true
+    })
 
-    const insertions = {};
+    const insertions = {}
 
     for (const driverId of driversIds) {
-      insertions[`/tripsByDrivers/${driverId}/${tripId}`] = original;
+      insertions[`/tripsByDrivers/${driverId}/${tripId}`] = original
     }
 
     insertions[`/trips/${tripId}/notifiedDrivers`] = utils.arrayToObject(
       driversIds
-    );
+    )
 
-    insertions[`/tripsByPassengers/${passengerId}/${tripId}`] = original;
+    insertions[`/tripsByPassengers/${passengerId}/${tripId}`] = original
 
-    console.log("Notify updates", insertions);
+    console.log('Notify updates', insertions)
 
     return admin
       .database()
       .ref()
-      .update(insertions);
-  });
+      .update(insertions)
+  })

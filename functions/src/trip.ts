@@ -1,112 +1,111 @@
-import { Trip, TripState } from "./models";
+import { Trip, TripState } from './models'
 
 export const take = (trip: Trip, tripId: string) => {
-  console.log("Handle trip take: ", tripId);
+  console.log('Handle trip take: ', tripId)
 
-  const passengerId = trip.passenger.id;
-  const targetDriver = trip.driver;
-  const updates = {};
+  const passengerId = trip.passenger.id
+  const targetDriver = trip.driver
+  const updates = {}
 
   if (targetDriver.id) {
-    const drivers = trip.notifiedDrivers || {};
+    const drivers = trip.notifiedDrivers || {}
 
     for (const driverId in drivers) {
       if (drivers.hasOwnProperty(driverId)) {
-        updates[`/tripsByDrivers/${driverId}/${tripId}/driver`] = targetDriver;
+        updates[`/tripsByDrivers/${driverId}/${tripId}/driver`] = targetDriver
         updates[`/tripsByDrivers/${driverId}/${tripId}/state`] =
-          driverId === targetDriver.id ? TripState.ACCEPTED : TripState.TAKED;
+          driverId === targetDriver.id ? TripState.ACCEPTED : TripState.TAKED
       }
     }
   }
 
-  updates[`/tripsByPassengers/${passengerId}/${tripId}/driver`] = targetDriver;
+  updates[`/tripsByPassengers/${passengerId}/${tripId}/driver`] = targetDriver
   updates[`/tripsByPassengers/${passengerId}/${tripId}/state`] =
-    TripState.ACCEPTED;
+    TripState.ACCEPTED
 
-  return updates;
-};
+  return updates
+}
 
 export const cancel = (trip: Trip, tripId: string) => {
-  console.log("Handle trip cancel: ", tripId);
+  console.log('Handle trip cancel: ', tripId)
 
-  const updates = {};
+  const updates = {}
 
   if (trip.notifiedDrivers) {
-    const drivers = trip.notifiedDrivers;
+    const drivers = trip.notifiedDrivers
 
     for (const driverId in drivers) {
       if (drivers.hasOwnProperty(driverId)) {
         updates[`/tripsByDrivers/${driverId}/${tripId}/state`] =
-          TripState.CANCEL;
+          TripState.CANCEL
       }
     }
   }
 
   updates[`/tripsByPassengers/${trip.passenger.id}/${tripId}/state`] =
-    TripState.CANCEL;
+    TripState.CANCEL
 
-  console.log("Trip cancel updates:", updates);
+  console.log('Trip cancel updates:', updates)
 
-  return updates;
-};
+  return updates
+}
 
 export const arrive = (trip: Trip, tripId: string) => {
-  console.log("Handle trip arrive: ", tripId);
+  console.log('Handle trip arrive: ', tripId)
 
-  const updates = {};
+  const updates = {}
 
   updates[`tripsByDrivers/${trip.driver.id}/${tripId}/state`] =
-    TripState.ARRIVED;
+    TripState.ARRIVED
   updates[`tripsByPassengers/${trip.passenger.id}/${tripId}/state`] =
-    TripState.ARRIVED;
+    TripState.ARRIVED
 
-  console.log("Trip arrive updates: ", updates);
+  console.log('Trip arrive updates: ', updates)
 
-  return updates;
-};
+  return updates
+}
 
 export const boarded = (trip: Trip, tripId: string) => {
-  console.log("Handle trip boarded: ", tripId);
+  console.log('Handle trip boarded: ', tripId)
 
-  const updates = {};
+  const updates = {}
 
   updates[`tripsByDrivers/${trip.driver.id}/${tripId}/state`] =
-    TripState.BOARDED;
+    TripState.BOARDED
   updates[`tripsByPassengers/${trip.passenger.id}/${tripId}/state`] =
-    TripState.BOARDED;
+    TripState.BOARDED
 
-  console.log("Trip boarded updates: ", updates);
+  console.log('Trip boarded updates: ', updates)
 
-  return updates;
-};
+  return updates
+}
 
 export const traveling = (trip: Trip, tripId: string) => {
-  console.log("Handle trip traveling: ", tripId);
+  console.log('Handle trip traveling: ', tripId)
 
-  const updates = {};
+  const updates = {}
 
   updates[`tripsByDrivers/${trip.driver.id}/${tripId}/state`] =
-    TripState.TRAVELING;
+    TripState.TRAVELING
   updates[`tripsByPassengers/${trip.passenger.id}/${tripId}/state`] =
-    TripState.TRAVELING;
+    TripState.TRAVELING
 
-  console.log("Trip traveling updates: ", updates);
+  console.log('Trip traveling updates: ', updates)
 
-  return updates;
-};
-
+  return updates
+}
 
 export const finalized = (trip: Trip, tripId: string) => {
-  console.log("Handle trip finalized: ", tripId);
+  console.log('Handle trip finalized: ', tripId)
 
-  const updates = {};
+  const updates = {}
 
   updates[`tripsByDrivers/${trip.driver.id}/${tripId}/state`] =
-    TripState.FINALIZED;
+    TripState.FINALIZED
   updates[`tripsByPassengers/${trip.passenger.id}/${tripId}/state`] =
-    TripState.FINALIZED;
+    TripState.FINALIZED
 
-  console.log("Trip finalized updates: ", updates);
+  console.log('Trip finalized updates: ', updates)
 
-  return updates;
-};
+  return updates
+}
