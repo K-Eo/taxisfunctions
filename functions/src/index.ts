@@ -66,35 +66,33 @@ export const notifyDrivers = functions.database
 
     console.log('Creating new trip', tripId, original)
 
-    const drivers = await admin
+    const snap = await admin
       .database()
       .ref('drivers')
-      .limitToFirst(10)
       .once('value')
 
+    const drivers = snap.toJSON()
+
+    const updates = {}
     const driversIds = []
 
-    drivers.forEach(snap => {
-      driversIds.push(snap.key)
-      return true
-    })
-
-    const insertions = {}
-
-    for (const driverId of driversIds) {
-      insertions[`/tripsByDrivers/${driverId}/${tripId}`] = original
+    for (const driverId in drivers) {
+      if (drivers.hasOwnProperty(driverId)) {
+        updates[`/tripsByDrivers/${driverId}/${tripId}`] = original
+        driversIds.push(driverId)
+      }
     }
 
-    insertions[`/trips/${tripId}/notifiedDrivers`] = utils.arrayToObject(
+    updates[`/trips/${tripId}/notifiedDrivers`] = utils.arrayToObject(
       driversIds
     )
 
-    insertions[`/tripsByPassengers/${passengerId}/${tripId}`] = original
+    updates[`/tripsByPassengers/${passengerId}/${tripId}`] = original
 
-    console.log('Notify updates', insertions)
+    console.log('Notify updates', updates)
 
     return admin
       .database()
       .ref()
-      .update(insertions)
+      .update(updates)
   })
